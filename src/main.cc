@@ -1,5 +1,7 @@
 #include "main.hh"
 
+#include "waves.hh"
+#include <vector>
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -51,46 +53,9 @@ int main(void)
     // ------------------------------------------------------------------
     int size = 50;
     float width = 0.2f;
-    float start = -0.5f;
-    float vertices[(int)(size * size * 18)];
-    size_t v_i = 0;
-    float z = 0.0f;
-    for (int x = 0; x < size; x++)
-    {
-        float pos_x = start + x * width;
-        for (int y = 0; y < size; y++)
-        {
-            float pos_y = start + y * width;
+    std::vector<float> vertices;
+    init_waves(vertices, size, width);
 
-            // ----- First triangle - left
-            // Top-Left
-            vertices[v_i++] = pos_x;
-            vertices[v_i++] = z;
-            vertices[v_i++] = pos_y;
-            // Bottom-Left
-            vertices[v_i++] = pos_x;
-            vertices[v_i++] = z;
-            vertices[v_i++] = pos_y + width;
-            // Bottom-Right
-            vertices[v_i++] = pos_x + width;
-            vertices[v_i++] = z;
-            vertices[v_i++] = pos_y + width;
-
-            // ----- Second triangle - right
-            // Top-Left
-            vertices[v_i++] = pos_x;
-            vertices[v_i++] = z;
-            vertices[v_i++] = pos_y;
-            // Bottom-Right
-            vertices[v_i++] = pos_x + width;
-            vertices[v_i++] = z;
-            vertices[v_i++] = pos_y + width;
-            // Top-Right
-            vertices[v_i++] = pos_x + width;
-            vertices[v_i++] = z;
-            vertices[v_i++] = pos_y;
-        }
-    }
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -99,7 +64,7 @@ int main(void)
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -135,7 +100,7 @@ int main(void)
         float now = glfwGetTime();
         offset = sin(now) / 2.0 + offset;
 
-       // glUniform1f(glGetUniformLocation(ourShader.ID, "offsetX"), offset);
+        glUniform1f(glGetUniformLocation(ourShader.ID, "time"), now);
 
         // render the triangle
         ourShader.use();
@@ -151,6 +116,8 @@ int main(void)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        //glfwSetCursorPos(window, SCR_WIDTH/2, SCR_HEIGHT/2);
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:

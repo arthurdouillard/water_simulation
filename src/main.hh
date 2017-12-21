@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <stdlib.h>
 
 #include "shader.h"
 #include "camera.h"
