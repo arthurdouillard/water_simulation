@@ -1,5 +1,8 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
+
+out vec2 TexCoord;
 
 uniform mat4 view;
 uniform mat4 projection;
@@ -14,9 +17,11 @@ void main()
 {
 	float xx = (aPos.x-3) * (aPos.x-3);
 	float yy = (aPos.y+1) * (aPos.y+1);
-
+//(2 * sin(20 * sqrt(xx + yy) - 4 * time) + rand(xx, yy)) / 10
 	gl_Position = projection * view * vec4(aPos.x,
-										   (2 * sin(20 * sqrt(xx + yy) - 4 * time) + rand(xx, yy)) / 10,
+										   aPos.y,
 										   aPos.z,
 										   1.0f);
+
+	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }
