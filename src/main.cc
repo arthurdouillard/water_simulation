@@ -21,8 +21,22 @@ int main(void)
     init_opengl();
 
 
-    int size = 100;
+    int size = 1000;
     float width = 0.5f;
+
+    /* Initialize the cubemap */
+    Shader shader_cubemap("shaders/vertex_cubemap.glsl", "shaders/frag_cubemap.glsl");
+    std::vector<std::string> faces
+    {
+        "resources/skybox/right.jpg",
+        "resources/skybox/left.jpg",
+        "resources/skybox/top.jpg",
+        "resources/skybox/bottom.jpg",
+        "resources/skybox/back.jpg",
+        "resources/skybox/front.jpg"
+    };
+    unsigned int texture_cubemap = load_cubemap_texture(faces);
+    unsigned int VAO_cubemap = load_cubemap();
 
     /* Initialize the water */
     Shader shader_water("shaders/vertex_water.glsl", "shaders/frag_water.glsl");
@@ -34,7 +48,7 @@ int main(void)
     /* Initialize the sand */
     Shader shader_sand("shaders/vertex_sand.glsl", "shaders/frag_sand.glsl");
     unsigned int texture_sand = load_texture("resources/sand.jpg");
-    auto vertices_sand = init_plane(size, width, -0.5f);
+    auto vertices_sand = init_plane(size, width, -1.0f);
     auto indices_sand = init_indices(size);
     unsigned int VAO_sand = load_object(vertices_sand, indices_sand);
 
@@ -54,6 +68,8 @@ int main(void)
     shader_sand.use();
     shader_sand.setInt("myText", 1);
 
+
+
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
@@ -65,10 +81,12 @@ int main(void)
         glBindTexture(GL_TEXTURE_2D, texture_water);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture_sand);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, texture_cubemap);
 
         /* Sand */
         shader_sand.use();
-        shader_sand.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix());
+        shader_sand.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix(), false);
 
         shader_sand.setVec3("cameraPos", camera->Position);
 
@@ -77,7 +95,7 @@ int main(void)
 
         /* Water */
         shader_water.use();
-        shader_water.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix());
+        shader_water.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix(), false);
 
         shader_water.setVec3("cameraPos", camera->Position);
         shader_water.setFloat("time", glfwGetTime());
@@ -85,6 +103,15 @@ int main(void)
         glBindVertexArray(VAO_water);
         glDrawElements(GL_TRIANGLES, indices_water->size(), GL_UNSIGNED_INT, 0);
 
+        /* Cubemap */
+        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+        shader_cubemap.use();
+        shader_cubemap.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix(), true);
+
+        glBindVertexArray(VAO_cubemap);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+        glDepthFunc(GL_LESS);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -244,3 +271,35 @@ unsigned int load_texture(const char* path)
 
     return texture;
 }
+
+unsigned int load_cubemap_texture(std::vector<std::string> faces)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++)
+    {
+        unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+            stbi_image_free(data);
+            exit(1);
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
+}
+

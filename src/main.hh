@@ -25,3 +25,4 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void init_opengl(void);
 unsigned int load_texture(const char* path);
+unsigned int load_cubemap_texture(std::vector<std::string> faces);
