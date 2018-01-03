@@ -64,7 +64,9 @@ public:
         // 2. compile shaders
         unsigned int vertex, fragment;
         int success;
+        (void)success;
         char infoLog[512];
+        (void)infoLog;
         // vertex shader
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
@@ -163,6 +165,13 @@ public:
     void setMat4(const std::string &name, const glm::mat4 &mat) const
     {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    }
+
+    void updateView(float fov, float SRC_WIDTH, float SRC_HEIGHT, glm::mat4 view_matrix)
+    {
+        glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SRC_WIDTH / (float)SRC_HEIGHT, 0.1f, 100.0f);
+        this->setMat4("projection", projection);
+        this->setMat4("view", view_matrix);
     }
 
 private:

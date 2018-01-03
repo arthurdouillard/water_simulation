@@ -21,7 +21,7 @@ enum Camera_Movement {
 const float YAW        = -90.0f;
 const float PITCH      =  -5.0f;
 const float SPEED      =  2.5f;
-const float SENSITIVTY =  0.1f;
+const float SENSITIVTY =  0.4f;
 const float ZOOM       =  45.0f;
 
 
@@ -44,7 +44,7 @@ public:
     float Zoom;
 
     // Constructor with vectors
-    Camera(glm::vec3 position = glm::vec3(0.0f, 2.0f, 8.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVTY), Zoom(ZOOM)
+    Camera(glm::vec3 position = glm::vec3(0.0f, 1.5f, 10.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVTY), Zoom(ZOOM)
     {
         Position = position;
         WorldUp = up;
@@ -72,6 +72,7 @@ public:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
+         velocity = 0.5f;
         if (direction == FORWARD)
             Position += Front * velocity;
         if (direction == BACKWARD)
@@ -88,7 +89,7 @@ public:
         xoffset *= MouseSensitivity;
         yoffset *= MouseSensitivity;
 
-        Yaw   += xoffset;
+        Yaw   -= xoffset;
         Pitch += yoffset;
 
         // Make sure that when pitch is out of bounds, screen doesn't get flipped
