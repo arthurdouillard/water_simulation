@@ -3,7 +3,8 @@
 
 #include <vector>
 
-void init_waves(std::vector<float>& vertices, int size, float width);
+std::vector<float>* init_waves(int size, float width);
+std::vector<unsigned int>* init_indices(int size);
 
 void top_left(std::vector<float>& vertices, float x, float y, float z);
 void top_right(std::vector<float>& vertices, float width, float x, float y, float z);

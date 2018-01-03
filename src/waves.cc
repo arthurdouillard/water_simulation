@@ -1,7 +1,30 @@
 #include "waves.hh"
 
-void init_waves(std::vector<float>& vertices, int size, float width)
+std::vector<unsigned int>* init_indices(int size)
 {
+    auto indices = new std::vector<unsigned int>();
+
+    for (int z = 0; z < size - 1; ++z)
+	{
+	    for (int x = 0; x < size - 1; ++x)
+	    {
+            int start = x + z * size;
+            indices->push_back(start);
+            indices->push_back(start + 1);
+            indices->push_back(start + size);
+            indices->push_back(start + 1);
+            indices->push_back(start + 1 + size);
+            indices->push_back(start + size);
+	    }
+    }
+
+    return indices;
+}
+
+std::vector<float>* init_waves(int size, float width)
+{
+    auto vertices = new std::vector<float>();
+
     float start = -(size / 2) * width;
 
     float pos_y = 0.0f;
@@ -10,17 +33,13 @@ void init_waves(std::vector<float>& vertices, int size, float width)
         float pos_x = start + x * width;
         for (int z = 0; z < size; z++)
         {
-            float pos_z = -(start + z * width);
-
-            top_left(vertices, pos_x, pos_y, pos_z);
-            bottom_left(vertices, width, pos_x, pos_y, pos_z);
-            bottom_right(vertices, width, pos_x, pos_y, pos_z);
-
-            top_left(vertices, pos_x, pos_y, pos_z);
-            bottom_right(vertices, width, pos_x, pos_y, pos_z);
-            top_right(vertices, width, pos_x, pos_y, pos_z);
+            float pos_z = (start + z * width);
+            vertices->push_back(pos_x);
+            vertices->push_back(pos_y);
+            vertices->push_back(pos_z);
         }
     }
+    return vertices;
 }
 
 void top_left(std::vector<float>& vertices, float x, float y, float z)
