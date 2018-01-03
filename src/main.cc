@@ -21,20 +21,20 @@ int main(void)
     init_opengl();
 
 
-    int size = 100;
+    int size = 10;
     float width = 0.5f;
 
     /* Initialize the water */
-    Shader shader_water("shaders/vertex_water.glsl", "shaders/frag.glsl");
-    unsigned int texture_water = load_texture("resources/reflection.jpg");
+    Shader shader_water("shaders/vertex_water.glsl", "shaders/frag_water.glsl");
+    unsigned int texture_water = load_texture("resources/water.png");
     auto vertices_water = init_plane(size, width, 4.0f);
     auto indices_water = init_indices(size);
     unsigned int VAO_water = load_object(vertices_water, indices_water);
 
     /* Initialize the sand */
-    Shader shader_sand("shaders/vertex_sand.glsl", "shaders/frag.glsl");
+    Shader shader_sand("shaders/vertex_sand.glsl", "shaders/frag_sand.glsl");
     unsigned int texture_sand = load_texture("resources/sand.jpg");
-    auto vertices_sand = init_plane(size, width, -4.0f);
+    auto vertices_sand = init_plane(size, width, -0.5f);
     auto indices_sand = init_indices(size);
     unsigned int VAO_sand = load_object(vertices_sand, indices_sand);
 
@@ -60,7 +60,7 @@ int main(void)
     {
         processInput(window);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.2f, 0.3f, 0.3f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
@@ -68,21 +68,21 @@ int main(void)
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture_sand);
 
-        shader_water.use();
-        shader_water.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix());
-
-        float now = glfwGetTime();
-        shader_water.setFloat("time", now);
-
-        glBindVertexArray(VAO_water);
-        glDrawElements(GL_TRIANGLES, indices_water->size(), GL_UNSIGNED_INT, 0);
-
-    shader_sand.use();
+        /* Sand */
+        shader_sand.use();
         shader_sand.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix());
 
         glBindVertexArray(VAO_sand);
         glDrawElements(GL_TRIANGLES, indices_sand->size(), GL_UNSIGNED_INT, 0);
 
+        /* Water */
+        shader_water.use();
+        shader_water.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix());
+
+        shader_water.setFloat("time", glfwGetTime());
+
+        glBindVertexArray(VAO_water);
+        glDrawElements(GL_TRIANGLES, indices_water->size(), GL_UNSIGNED_INT, 0);
       //  glBindVertexArray(VAO_sand);
       //  glDrawElements(GL_TRIANGLES, indices_sand->size(), GL_UNSIGNED_INT, 0);
 
@@ -206,6 +206,8 @@ void init_opengl(void)
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
     // Set callbacks
     glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -220,8 +222,8 @@ unsigned int load_texture(const char* path)
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
