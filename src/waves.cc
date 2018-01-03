@@ -28,12 +28,18 @@ void top_left(std::vector<float>& vertices, float x, float y, float z)
     vertices.push_back(x);
     vertices.push_back(y);
     vertices.push_back(z);
+
+    vertices.push_back(x);
+    vertices.push_back(z);
 }
 
 void top_right(std::vector<float>& vertices, float width, float x, float y, float z)
 {
     vertices.push_back(x + width);
     vertices.push_back(y);
+    vertices.push_back(z);
+
+    vertices.push_back(x + width);
     vertices.push_back(z);
 }
 
@@ -42,12 +48,18 @@ void bottom_left(std::vector<float>& vertices, float width, float x, float y, fl
     vertices.push_back(x);
     vertices.push_back(y);
     vertices.push_back(z + width);
+
+    vertices.push_back(x);
+    vertices.push_back(z + width);
 }
 
 void bottom_right(std::vector<float>& vertices, float width, float x, float y, float z)
 {
     vertices.push_back(x + width);
     vertices.push_back(y);
+    vertices.push_back(z + width);
+
+    vertices.push_back(x + width);
     vertices.push_back(z + width);
 }
 
