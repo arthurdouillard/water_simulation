@@ -21,7 +21,7 @@ int main(void)
     init_opengl();
 
 
-    int size = 10;
+    int size = 100;
     float width = 0.5f;
 
     /* Initialize the water */
@@ -54,8 +54,6 @@ int main(void)
     shader_sand.use();
     shader_sand.setInt("myText", 1);
 
-
-
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
@@ -72,6 +70,8 @@ int main(void)
         shader_sand.use();
         shader_sand.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix());
 
+        shader_sand.setVec3("cameraPos", camera->Position);
+
         glBindVertexArray(VAO_sand);
         glDrawElements(GL_TRIANGLES, indices_sand->size(), GL_UNSIGNED_INT, 0);
 
@@ -79,12 +79,11 @@ int main(void)
         shader_water.use();
         shader_water.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix());
 
+        shader_water.setVec3("cameraPos", camera->Position);
         shader_water.setFloat("time", glfwGetTime());
 
         glBindVertexArray(VAO_water);
         glDrawElements(GL_TRIANGLES, indices_water->size(), GL_UNSIGNED_INT, 0);
-      //  glBindVertexArray(VAO_sand);
-      //  glDrawElements(GL_TRIANGLES, indices_sand->size(), GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
