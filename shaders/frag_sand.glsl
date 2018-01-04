@@ -23,4 +23,14 @@ void main()
         FragColor *= vec4(0.172, 0.690, 0.215, 1.0);
     else if (vertexPos.y > 6 && vertexPos.y < 10)
         FragColor *= vec4(0.501, 0.517, 0.529, 1.0);
+
+    vec3 diffuse = vec3(0.0, -1.0, 0.0);
+    float attenuation =  dot(-normalize(cross(dFdx(vertexPos), dFdy(vertexPos))), diffuse);
+    attenuation = max(attenuation, 0.0);
+
+    vec3 hazy_ambiant = 0.4 * vec3(0.741, 0.745, 0.752);
+    vec3 sunrise_ambiant = 0.4 * vec3(0.713, 0.494, 0.356);
+
+    FragColor.xyz *= (hazy_ambiant + attenuation);
+    FragColor.a = 1.0;
 }
