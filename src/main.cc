@@ -55,7 +55,7 @@ int main(void)
 
     /* Initialize the water */
     Shader shader_water("shaders/vertex_water.glsl", "shaders/frag_water.glsl");
-    unsigned int texture_water = load_texture("resources/water.png");
+    unsigned int texture_water = load_texture("resources/water_lowpoly.jpg");
     auto vertices_water = init_plane(width, rec_width, 4.0f);
     auto indices_water = init_indices(width);
     unsigned int VAO_water = load_object(vertices_water, indices_water);
@@ -70,13 +70,15 @@ int main(void)
     glBindVertexArray(0);
 
 
+    shader_cubemap.use();
+    shader_cubemap.setInt("skybox", 2);
+
     shader_water.use();
     shader_water.setInt("myText", 0);
+    shader_water.setInt("skybox", 2);
 
     shader_sand.use();
     shader_sand.setInt("myText", 1);
-
-
 
     while (!glfwWindowShouldClose(window))
     {
@@ -104,6 +106,7 @@ int main(void)
         shader_water.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix(), false);
 
         shader_water.setFloat("time", glfwGetTime());
+        shader_water.setVec3("cameraPos", camera->Position);
 
         shader_water.setFloat("speed", opt_speed);
         shader_water.setFloat("amount", opt_amount);
@@ -162,7 +165,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
     if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
-        // Camera
+        // -- Camera
         if (key == GLFW_KEY_RIGHT)
             camera->ProcessKeyboard(RIGHT, delta_time);
         else if (key == GLFW_KEY_LEFT)
@@ -171,7 +174,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             camera->ProcessKeyboard(FORWARD, delta_time);
         else if (key == GLFW_KEY_DOWN)
             camera->ProcessKeyboard(BACKWARD, delta_time);
-
+        // --- Water
         // Speed
         else if (key == GLFW_KEY_Q && opt_speed < 2.0f)
             opt_speed += 0.1f;
@@ -187,11 +190,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             opt_height += 0.1f;
         else if (key == GLFW_KEY_X && opt_height > 0.0f)
             opt_height -= 0.1f;
-
-        std::cout << "speed " << opt_speed << "\n";
-        std::cout << "amount " << opt_amount << "\n";
-        std::cout << "heigh " << opt_height << "\n\n";
-
     }
 }
 
