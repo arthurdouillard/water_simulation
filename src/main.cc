@@ -21,36 +21,40 @@ int main(void)
     init_opengl();
 
 
-    int size = 1000;
-    float width = 0.5f;
+    int size = 100;
+    float rec_width = 0.5f;
 
     /* Initialize the cubemap */
     Shader shader_cubemap("shaders/vertex_cubemap.glsl", "shaders/frag_cubemap.glsl");
     std::vector<std::string> faces
     {
-        "resources/skybox/right.jpg",
-        "resources/skybox/left.jpg",
-        "resources/skybox/top.jpg",
-        "resources/skybox/bottom.jpg",
-        "resources/skybox/back.jpg",
-        "resources/skybox/front.jpg"
+        "resources/cubemap/right.jpg",
+        "resources/cubemap/left.jpg",
+        "resources/cubemap/up.jpg",
+        "resources/cubemap/down.jpg",
+        "resources/cubemap/front.jpg",
+        "resources/cubemap/back.jpg"
     };
     unsigned int texture_cubemap = load_cubemap_texture(faces);
     unsigned int VAO_cubemap = load_cubemap();
 
+    /* Initialize the sand */
+    Shader shader_sand("shaders/vertex_sand.glsl", "shaders/frag_sand.glsl");
+    unsigned int texture_sand = load_texture("resources/ground.jpg");
+
+    int width, height, chan;
+    unsigned char *data = stbi_load("resources/height_map.jpg", &width, &height, &chan, 0);
+    auto vertices_sand = init_height_map(data, width, height, chan, rec_width);
+    stbi_image_free(data);
+    auto indices_sand = init_indices(width);
+    unsigned int VAO_sand = load_object(vertices_sand, indices_sand);
+
     /* Initialize the water */
     Shader shader_water("shaders/vertex_water.glsl", "shaders/frag_water.glsl");
     unsigned int texture_water = load_texture("resources/water.png");
-    auto vertices_water = init_plane(size, width, 4.0f);
-    auto indices_water = init_indices(size);
+    auto vertices_water = init_plane(width, rec_width, 4.0f);
+    auto indices_water = init_indices(width);
     unsigned int VAO_water = load_object(vertices_water, indices_water);
-
-    /* Initialize the sand */
-    Shader shader_sand("shaders/vertex_sand.glsl", "shaders/frag_sand.glsl");
-    unsigned int texture_sand = load_texture("resources/sand.jpg");
-    auto vertices_sand = init_plane(size, width, -1.0f);
-    auto indices_sand = init_indices(size);
-    unsigned int VAO_sand = load_object(vertices_sand, indices_sand);
 
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
@@ -88,8 +92,6 @@ int main(void)
         shader_sand.use();
         shader_sand.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix(), false);
 
-        shader_sand.setVec3("cameraPos", camera->Position);
-
         glBindVertexArray(VAO_sand);
         glDrawElements(GL_TRIANGLES, indices_sand->size(), GL_UNSIGNED_INT, 0);
 
@@ -97,7 +99,6 @@ int main(void)
         shader_water.use();
         shader_water.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix(), false);
 
-        shader_water.setVec3("cameraPos", camera->Position);
         shader_water.setFloat("time", glfwGetTime());
 
         glBindVertexArray(VAO_water);
@@ -215,7 +216,7 @@ void init_opengl(void)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    window = glfwCreateWindow(SRC_WIDTH, SRC_HEIGHT, "LearnOpenGL", NULL, NULL);
+    window = glfwCreateWindow(SRC_WIDTH, SRC_HEIGHT, "Water Simulation", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -302,4 +303,3 @@ unsigned int load_cubemap_texture(std::vector<std::string> faces)
 
     return textureID;
 }
-

@@ -1,5 +1,38 @@
 #include "waves.hh"
 
+std::vector<float>* init_height_map(unsigned char* data,
+                                    float width, float height, float chan,
+                                    float rec_width)
+{
+    auto vertices = new std::vector<float>();
+
+    float start = -(width / 2) * rec_width;
+
+    for (int x = 0; x < width; x++)
+    {
+        float pos_x = start + x * rec_width;
+        for (int z = 0; z < width; z++)
+        {
+            float pos_z = -(start + z * rec_width);
+
+            int pos_img = (x + z * width) * chan;
+            float pixel = data[pos_img]; // Height map is already grayscaled
+
+            pixel = (pixel / 10) - 10; // Hardcoded scaling
+            vertices->push_back(pos_x);
+            vertices->push_back(pixel);
+            vertices->push_back(pos_z);
+
+            // Texture coordinates
+            vertices->push_back(pos_x);
+            vertices->push_back(pos_z);
+        }
+    }
+
+    return vertices;
+}
+
+
 unsigned int load_cubemap(void)
 {
     float vertices[] = {
@@ -119,6 +152,7 @@ std::vector<float>* init_plane(int size, float width, float height)
             vertices->push_back(height);
             vertices->push_back(pos_z);
 
+            // Texture coordinates
             vertices->push_back(pos_x);
             vertices->push_back(pos_z);
         }

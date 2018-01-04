@@ -17,8 +17,8 @@ void main()
 	float yy = (aPos.y+1) * (aPos.y+1);
 
 	float speed = 2.0f;
-	float amount = 1.0f;
-	float height = 0.1f;
+	float amount = 0.5f;
+	float height = 0.3f;
 
 	float y = sin(time * speed + (aPos.x * aPos.z * amount)) * height;
 	gl_Position = projection * view * vec4(aPos.x, y, aPos.z, 1.0f);

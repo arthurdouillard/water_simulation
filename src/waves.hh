@@ -6,6 +6,10 @@
 
 #include <vector>
 
+std::vector<float>* init_height_map(unsigned char* data,
+                                    float width, float height, float chan,
+                                    float rec_width);
+
 std::vector<float>* init_plane(int size, float width, float height);
 std::vector<unsigned int>* init_indices(int size);
 
