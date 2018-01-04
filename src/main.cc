@@ -13,6 +13,10 @@ float mouse_y = SRC_HEIGHT / 2;
 float fov = 45.0f;
 unsigned char mouse_action = 0;
 
+float opt_speed = 0.8f;
+float opt_amount = 0.01f;
+float opt_height = 0.5f;
+
 Camera* camera = new Camera();
 GLFWwindow* window = NULL;
 
@@ -101,6 +105,11 @@ int main(void)
 
         shader_water.setFloat("time", glfwGetTime());
 
+        shader_water.setFloat("speed", opt_speed);
+        shader_water.setFloat("amount", opt_amount);
+        shader_water.setFloat("height", opt_height);
+
+
         glBindVertexArray(VAO_water);
         glDrawElements(GL_TRIANGLES, indices_water->size(), GL_UNSIGNED_INT, 0);
 
@@ -153,6 +162,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
     if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
+        // Camera
         if (key == GLFW_KEY_RIGHT)
             camera->ProcessKeyboard(RIGHT, delta_time);
         else if (key == GLFW_KEY_LEFT)
@@ -161,6 +171,27 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             camera->ProcessKeyboard(FORWARD, delta_time);
         else if (key == GLFW_KEY_DOWN)
             camera->ProcessKeyboard(BACKWARD, delta_time);
+
+        // Speed
+        else if (key == GLFW_KEY_Q && opt_speed < 2.0f)
+            opt_speed += 0.1f;
+        else if (key == GLFW_KEY_W && opt_speed > 0.0f)
+            opt_speed -= 0.1f;
+        // Amount
+        else if (key == GLFW_KEY_A && opt_amount < 0.1f)
+            opt_amount += 0.01f;
+        else if (key == GLFW_KEY_S && opt_amount > 0.0f)
+            opt_amount -= 0.1f;
+        // Height
+        else if (key == GLFW_KEY_Z && opt_height < 0.5f)
+            opt_height += 0.1f;
+        else if (key == GLFW_KEY_X && opt_height > 0.0f)
+            opt_height -= 0.1f;
+
+        std::cout << "speed " << opt_speed << "\n";
+        std::cout << "amount " << opt_amount << "\n";
+        std::cout << "heigh " << opt_height << "\n\n";
+
     }
 }
 
