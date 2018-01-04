@@ -16,6 +16,8 @@ unsigned char mouse_action = 0;
 float opt_speed = 0.8f;
 float opt_amount = 0.01f;
 float opt_height = 0.5f;
+unsigned char opt_mesh = 0;
+
 
 Camera* camera = new Camera();
 GLFWwindow* window = NULL;
@@ -55,18 +57,14 @@ int main(void)
 
     /* Initialize the water */
     Shader shader_water("shaders/vertex_water.glsl", "shaders/frag_water.glsl");
-    unsigned int texture_water = load_texture("resources/water_lowpoly.jpg");
+    unsigned int texture_water = load_texture("resources/water.png");
     auto vertices_water = init_plane(width, rec_width, 4.0f);
     auto indices_water = init_indices(width);
     unsigned int VAO_water = load_object(vertices_water, indices_water);
 
 
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0);
 
 
@@ -190,6 +188,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             opt_height += 0.1f;
         else if (key == GLFW_KEY_X && opt_height > 0.0f)
             opt_height -= 0.1f;
+        // -- Misc
+        // Mesh grid
+        else if (key == GLFW_KEY_M)
+        {
+            if (opt_mesh)
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            else
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+            opt_mesh = opt_mesh ? 0 : 1;
+        }
     }
 }
 
