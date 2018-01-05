@@ -24,7 +24,7 @@ void main()
     else if (vertexPos.y > 6 && vertexPos.y < 10)
         FragColor *= vec4(0.501, 0.517, 0.529, 1.0);
 
-    vec3 diffuse = vec3(0.0, -1.0, 0.0);
+    vec3 diffuse = vec3(-1.0, -1.0, -1.0);
     float attenuation =  dot(-normalize(cross(dFdx(vertexPos), dFdy(vertexPos))), diffuse);
     attenuation = max(attenuation, 0.0);
 
