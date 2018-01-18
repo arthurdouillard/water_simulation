@@ -26,8 +26,6 @@ int main(void)
 {
     init_opengl();
 
-
-    int size = 100;
     float rec_width = 0.5f;
 
     /* Initialize the cubemap */
@@ -62,7 +60,6 @@ int main(void)
     auto indices_water = init_indices(width);
     unsigned int VAO_water = load_object(vertices_water, indices_water);
 
-
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBindVertexArray(0);
@@ -72,11 +69,11 @@ int main(void)
     shader_cubemap.setInt("skybox", 2);
 
     shader_water.use();
-    shader_water.setInt("myText", 0);
+    shader_water.setInt("TexWater", 0);
     shader_water.setInt("skybox", 2);
 
     shader_sand.use();
-    shader_sand.setInt("myText", 1);
+    shader_sand.setInt("TexSand", 1);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -110,12 +107,11 @@ int main(void)
         shader_water.setFloat("amount", opt_amount);
         shader_water.setFloat("height", opt_height);
 
-
         glBindVertexArray(VAO_water);
         glDrawElements(GL_TRIANGLES, indices_water->size(), GL_UNSIGNED_INT, 0);
 
         /* Cubemap */
-        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+        glDepthFunc(GL_LEQUAL);
         shader_cubemap.use();
         shader_cubemap.updateView(fov, SRC_WIDTH, SRC_HEIGHT, camera->GetViewMatrix(), true);
 
@@ -123,32 +119,15 @@ int main(void)
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS);
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
+
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        //glfwSetCursorPos(window, SCR_WIDTH/2, SCR_HEIGHT/2);
     }
-
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &VAO_water);
-  //  glDeleteBuffers(1, &VBO);
-  //  glDeleteBuffers(1, &EBO);
-
-    // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
-    delete camera;
-    delete vertices_water;
-    delete indices_water;
 
     glfwTerminate();
     return 0;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     (void)scancode;

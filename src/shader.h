@@ -1,4 +1,6 @@
-
+/*
+ * Mostly taken from learnopenl.
+*/
 
 #ifndef SHADER_H
 #define SHADER_H
@@ -169,7 +171,7 @@ public:
 
     void updateView(float fov, float SRC_WIDTH, float SRC_HEIGHT, glm::mat4 view_matrix, bool cubemap)
     {
-        glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SRC_WIDTH / (float)SRC_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SRC_WIDTH / (float)SRC_HEIGHT, 0.1f, 1000.0f);
         this->setMat4("projection", projection);
 
         if (cubemap)

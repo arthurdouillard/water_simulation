@@ -4,7 +4,7 @@ out vec4 FragColor;
 in vec3 vertexPos;
 in vec2 TexCoord;
 
-uniform sampler2D myText;
+uniform sampler2D TexSand;
 
 vec4 colorize(vec4 src, vec4 dst)
 {
@@ -15,7 +15,7 @@ vec4 colorize(vec4 src, vec4 dst)
 
 void main()
 {
-    FragColor = texture(myText, TexCoord);
+    FragColor = texture(TexSand, TexCoord);
 
     if (vertexPos.y <= 1.5)
         FragColor *= vec4(0.761, 0.698, 0.502, 1.0);
@@ -29,7 +29,7 @@ void main()
     attenuation = max(attenuation, 0.0);
 
     vec3 hazy_ambiant = 0.4 * vec3(0.741, 0.745, 0.752);
-    vec3 sunrise_ambiant = 0.4 * vec3(0.713, 0.494, 0.356);
+    vec3 sunrise_ambiant = 0.2 * vec3(0.713, 0.494, 0.356);
 
     FragColor.xyz *= (hazy_ambiant + attenuation);
     FragColor.a = 1.0;

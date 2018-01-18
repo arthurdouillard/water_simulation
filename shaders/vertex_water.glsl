@@ -20,7 +20,7 @@ void main()
 	float xx = (aPos.x-3) * (aPos.x-3);
 	float yy = (aPos.y+1) * (aPos.y+1);
 
-	float y = sin(time * speed + (aPos.x * aPos.z * amount)) * height;
+	float y = sin(time * speed + (aPos.x * aPos.z * amount) + 0.5 * cos(aPos.x * aPos.z * amount)) * height;
 	gl_Position = projection * view * vec4(aPos.x, y, aPos.z, 1.0f);
 
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);

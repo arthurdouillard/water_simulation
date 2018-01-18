@@ -4,6 +4,7 @@ std::vector<float>* init_height_map(unsigned char* data,
                                     float width, float height, float chan,
                                     float rec_width)
 {
+    (void)height;
     auto vertices = new std::vector<float>();
 
     float start = -(width / 2) * rec_width;
