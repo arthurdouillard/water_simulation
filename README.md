@@ -6,6 +6,8 @@ Features:
 - Skybox
 - Surrounding lands based on a height map, low-poly style
 
+![Example](examples/example.png)
+
 # To Launch
 
 ```
@@ -21,4 +23,3 @@ $ make && ./water
 - `q` to increase waves' speed, `w` to decrease it
 - `a` to increase waves' amount, `s` to decrease it
 - `z` to increase waves' height, `x` to decrease it
-
